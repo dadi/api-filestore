@@ -5,6 +5,7 @@ var path = require('path')
 var querystring = require('querystring')
 var should = require('should')
 var url = require('url')
+var uuid = require('uuid')
 
 var config = require(__dirname + '/../config')
 
@@ -112,6 +113,36 @@ describe('FileStore', function () {
           results.length.should.eql(2)
           results[0].name.should.eql('Ernest')
           results[1].name.should.eql('Wallace')
+          done()
+        })
+      })
+    })
+
+    it('should add _id property if one isn\'t specified', function (done) {
+      var fileStore = new FileStoreAdapter()
+      fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
+        var users = [{ name: 'Ernest' }, { name: 'Wallace' }]
+
+        fileStore.insert(users, 'users', {}).then((results) => {
+          results.constructor.name.should.eql('Array')
+          results.length.should.eql(2)
+          results[0].name.should.eql('Ernest')
+          should.exist(results[0]._id)
+          done()
+        })
+      })
+    })
+
+    it('should use specified _id property if one is specified', function (done) {
+      var fileStore = new FileStoreAdapter()
+      fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
+        var users = [{ _id: uuid.v4(), name: 'Ernest' }, { name: 'Wallace' }]
+
+        fileStore.insert(users, 'users', {}).then((results) => {
+          results.constructor.name.should.eql('Array')
+          results.length.should.eql(2)
+          results[0].name.should.eql('Ernest')
+          results[0]._id.should.eql(users[0]._id)
           done()
         })
       })
