@@ -1,3 +1,7 @@
 {
-  "path": "test/workspace/test.db"
+  "database": {
+    "path": "test/workspace",
+    "autosaveInterval": 1000,
+    "serializationMethod": "pretty"
+  }
 }
