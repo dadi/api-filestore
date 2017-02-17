@@ -164,6 +164,169 @@ describe('FileStore', function () {
         })
       })
     })
+
+    it('should return the number of records requested when using `limit`', function (done) {
+      var fileStore = new FileStoreAdapter()
+      fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
+
+        fileStore.getCollection('users').then((collection) => {
+          collection.clear()
+
+          var users = [{ name: 'BigBird' }, { name: 'Ernie' }, { name: 'Oscar' }]
+
+          fileStore.insert(users, 'users', {}).then((results) => {
+            fileStore.find({}, 'users', { limit: 2 }).then((results) => {
+              results.constructor.name.should.eql('Array')
+              results.length.should.eql(2)
+              done()
+            }).catch((err) => {
+              done(err)
+            })
+          }).catch((err) => {
+            done(err)
+          })
+        })
+      })
+    })
+
+    it.skip('should sort records in ascending order by the `createdAt` property when no query or sort are provided', function (done) {
+      var fileStore = new FileStoreAdapter()
+      fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
+
+        fileStore.getCollection('users').then((collection) => {
+          collection.clear()
+
+          var users = [{ name: 'Ernie' }, { name: 'Oscar' }, { name: 'BigBird' }]
+
+          fileStore.insert(users, 'users', {}).then((results) => {
+            fileStore.find({}, 'users').then((results) => {
+              results.constructor.name.should.eql('Array')
+              results.length.should.eql(3)
+
+              results[0].name.should.eql('Ernie')
+              results[1].name.should.eql('Oscar')
+              results[2].name.should.eql('BigBird')
+              done()
+            }).catch((err) => {
+              done(err)
+            })
+          }).catch((err) => {
+            done(err)
+          })
+        })
+      })
+    })
+
+    it('should sort records in ascending order by the query property when no sort is provided', function (done) {
+      var fileStore = new FileStoreAdapter()
+      fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
+
+        fileStore.getCollection('users').then((collection) => {
+          collection.clear()
+
+          var users = [{ name: 'BigBird 3' }, { name: 'BigBird 1' }, { name: 'BigBird 2' }]
+
+          fileStore.insert(users, 'users', {}).then((results) => {
+            fileStore.find({ name: { '$regex': 'Big' } }, 'users').then((results) => {
+              results.constructor.name.should.eql('Array')
+              results.length.should.eql(3)
+              results[0].name.should.eql('BigBird 1')
+              results[1].name.should.eql('BigBird 2')
+              results[2].name.should.eql('BigBird 3')
+              done()
+            }).catch((err) => {
+              done(err)
+            })
+          }).catch((err) => {
+            done(err)
+          })
+        })
+      })
+    })
+
+    it('should sort records in ascending order by the specified property', function (done) {
+      var fileStore = new FileStoreAdapter()
+      fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
+
+        fileStore.getCollection('users').then((collection) => {
+          collection.clear()
+
+          var users = [{ name: 'Ernie' }, { name: 'Oscar' }, { name: 'BigBird' }]
+
+          fileStore.insert(users, 'users', {}).then((results) => {
+            fileStore.find({}, 'users', { sort: { name: 1 } }).then((results) => {
+              results.constructor.name.should.eql('Array')
+              results.length.should.eql(3)
+              results[0].name.should.eql('BigBird')
+              results[1].name.should.eql('Ernie')
+              results[2].name.should.eql('Oscar')
+              done()
+            }).catch((err) => {
+              done(err)
+            })
+          }).catch((err) => {
+            done(err)
+          })
+        })
+      })
+    })
+
+    it('should sort records in descending order by the specified property', function (done) {
+      var fileStore = new FileStoreAdapter()
+      fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
+
+        fileStore.getCollection('users').then((collection) => {
+          collection.clear()
+
+          var users = [{ name: 'Ernie' }, { name: 'Oscar' }, { name: 'BigBird' }]
+
+          fileStore.insert(users, 'users', {}).then((results) => {
+            fileStore.find({}, 'users', { sort: { name: -1 } }).then((results) => {
+              results.constructor.name.should.eql('Array')
+              results.length.should.eql(3)
+              results[0].name.should.eql('Oscar')
+              results[1].name.should.eql('Ernie')
+              results[2].name.should.eql('BigBird')
+              done()
+            }).catch((err) => {
+              done(err)
+            })
+          }).catch((err) => {
+            done(err)
+          })
+        })
+      })
+    })
+
+    it('should return only the fields specified by the `fields` property', function (done) {
+      var fileStore = new FileStoreAdapter()
+      fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
+
+        fileStore.getCollection('users').then((collection) => {
+          collection.clear()
+
+          var users = [{ name: 'Ernie', age: 7, colour: 'yellow' }, { name: 'Oscar', age: 9, colour: 'green' }, { name: 'BigBird', age: 13, colour: 'yellow' }]
+
+          fileStore.insert(users, 'users', {}).then((results) => {
+            fileStore.find({ colour: 'yellow' }, 'users', { sort: { name: 1 }, fields: { name: 1, age: 1 } }).then((results) => {
+              results.constructor.name.should.eql('Array')
+              results.length.should.eql(2)
+
+              var bigBird = results[0]
+              should.exist(bigBird.name)
+              should.exist(bigBird.age)
+              should.exist(bigBird._id)
+              should.not.exist(bigBird.colour)
+              done()
+            }).catch((err) => {
+              done(err)
+            })
+          }).catch((err) => {
+            done(err)
+          })
+        })
+      })
+    })
   })
 
   describe('database', function () {
