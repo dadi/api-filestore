@@ -23,7 +23,7 @@ describe('FileStore', function () {
   })
 
   after(function (done) {
-    console.log('Finished, waiting for database to be written to disk...')
+    console.log('\n  Finished, waiting for database to be written to disk...')
     setTimeout(function() {
       try {
         fs.unlinkSync(path.resolve(path.join(config.get('database.path'), 'auth.db')))
@@ -323,6 +323,69 @@ describe('FileStore', function () {
             })
           }).catch((err) => {
             done(err)
+          })
+        })
+      })
+    })
+  })
+
+  describe('update', function () {
+    describe('$set', function () {
+      it('should update documents matching the query', function (done) {
+        var fileStore = new FileStoreAdapter()
+        fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
+
+          fileStore.getCollection('users').then((collection) => {
+            collection.clear()
+
+            var users = [{ name: 'Ernie', age: 7, colour: 'yellow' }, { name: 'Oscar', age: 9, colour: 'green' }, { name: 'BigBird', age: 13, colour: 'yellow' }]
+
+            fileStore.insert(users, 'users', {}).then((results) => {
+              fileStore.update( { colour: 'green' }, 'users', { '$set': { colour: 'yellow' } }).then((results) => {
+                fileStore.find({ colour: 'yellow' }, 'users', {}).then((results) => {
+                  results.constructor.name.should.eql('Array')
+                  results.length.should.eql(3)
+                  done()
+                }).catch((err) => {
+                  done(err)
+                })
+              }).catch((err) => {
+                done(err)
+              })
+            }).catch((err) => {
+              done(err)
+            })
+          })
+        })
+      })
+    })
+
+    describe('$inc', function () {
+      it('should update documents matching the query', function (done) {
+        var fileStore = new FileStoreAdapter()
+        fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
+
+          fileStore.getCollection('users').then((collection) => {
+            collection.clear()
+
+            var users = [{ name: 'Ernie', age: 7, colour: 'yellow' }, { name: 'Oscar', age: 9, colour: 'green' }, { name: 'BigBird', age: 13, colour: 'yellow' }]
+
+            fileStore.insert(users, 'users', {}).then((results) => {
+              fileStore.update( { colour: 'green' }, 'users', { '$inc': { age: 10 } }).then((results) => {
+                fileStore.find({ colour: 'green' }, 'users', {}).then((results) => {
+                  results.constructor.name.should.eql('Array')
+                  results.length.should.eql(1)
+                  results[0].age.should.eql(19)
+                  done()
+                }).catch((err) => {
+                  done(err)
+                })
+              }).catch((err) => {
+                done(err)
+              })
+            }).catch((err) => {
+              done(err)
+            })
           })
         })
       })
