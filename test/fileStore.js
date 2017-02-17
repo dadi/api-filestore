@@ -329,6 +329,36 @@ describe('FileStore', function () {
     })
   })
 
+  describe('delete', function () {
+    it('should delete documents matching the query', function (done) {
+      var fileStore = new FileStoreAdapter()
+      fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
+
+        fileStore.getCollection('users').then((collection) => {
+          collection.clear()
+
+          var users = [{ name: 'Ernie', age: 7, colour: 'yellow' }, { name: 'Oscar', age: 9, colour: 'green' }, { name: 'BigBird', age: 13, colour: 'yellow' }]
+
+          fileStore.insert(users, 'users', {}).then((results) => {
+            fileStore.delete( { colour: 'green' }, 'users').then((results) => {
+              fileStore.find({}, 'users', {}).then((results) => {
+                results.constructor.name.should.eql('Array')
+                results.length.should.eql(2)
+                done()
+              }).catch((err) => {
+                done(err)
+              })
+            }).catch((err) => {
+              done(err)
+            })
+          }).catch((err) => {
+            done(err)
+          })
+        })
+      })
+    })
+  })
+
   describe('database', function () {
     it('should contain all collections that have been inserted into', function (done) {
       var fileStore = new FileStoreAdapter()
