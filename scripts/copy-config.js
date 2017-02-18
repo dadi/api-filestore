@@ -21,4 +21,4 @@ mkdirp(destinationDi, (err, made) => {
       console.log('Filestore configuration created at', destinationFile)
     })
   })
-}
+})
