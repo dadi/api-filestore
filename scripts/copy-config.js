@@ -9,7 +9,7 @@ var configPath = path.join(__dirname, '../config/filestore.development.json.samp
 var destinationDir = path.join(currentPath, '../../../config')
 var destinationFile = path.join(destinationDir, 'filestore.development.json')
 
-mkdirp(destinationDi, (err, made) => {
+mkdirp(destinationDir, (err, made) => {
   if (err) throw err
 
   fs.readFile(configPath, (err, data) => {
