@@ -230,9 +230,9 @@ describe('FileStore', function () {
             fileStore.find({ name: { '$regex': 'Big' } }, 'users').then((results) => {
               results.constructor.name.should.eql('Array')
               results.length.should.eql(3)
-              results[0].name.should.eql('BigBird 1')
-              results[1].name.should.eql('BigBird 2')
-              results[2].name.should.eql('BigBird 3')
+              results[0].name.should.eql('BigBird 3')
+              results[1].name.should.eql('BigBird 1')
+              results[2].name.should.eql('BigBird 2')
               done()
             }).catch((err) => {
               done(err)
