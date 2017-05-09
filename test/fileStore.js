@@ -157,8 +157,8 @@ describe('FileStore', function () {
 
         fileStore.insert(users, 'users', {}).then((results) => {
           fileStore.find({ name: 'Wallace' }, 'users', {}).then((results) => {
-            results.constructor.name.should.eql('Array')
-            results[0].name.should.eql('Wallace')
+            results.results.constructor.name.should.eql('Array')
+            results.results[0].name.should.eql('Wallace')
             done()
           })
         })
@@ -176,8 +176,8 @@ describe('FileStore', function () {
 
           fileStore.insert(users, 'users', {}).then((results) => {
             fileStore.find({}, 'users', { limit: 2 }).then((results) => {
-              results.constructor.name.should.eql('Array')
-              results.length.should.eql(2)
+              results.results.constructor.name.should.eql('Array')
+              results.results.length.should.eql(2)
               done()
             }).catch((err) => {
               done(err)
@@ -200,12 +200,12 @@ describe('FileStore', function () {
 
           fileStore.insert(users, 'users', {}).then((results) => {
             fileStore.find({}, 'users').then((results) => {
-              results.constructor.name.should.eql('Array')
-              results.length.should.eql(3)
+              results.results.constructor.name.should.eql('Array')
+              results.results.length.should.eql(3)
 
-              results[0].name.should.eql('Ernie')
-              results[1].name.should.eql('Oscar')
-              results[2].name.should.eql('BigBird')
+              results.results[0].name.should.eql('Ernie')
+              results.results[1].name.should.eql('Oscar')
+              results.results[2].name.should.eql('BigBird')
               done()
             }).catch((err) => {
               done(err)
@@ -228,11 +228,11 @@ describe('FileStore', function () {
 
           fileStore.insert(users, 'users', {}).then((results) => {
             fileStore.find({ name: { '$regex': 'Big' } }, 'users').then((results) => {
-              results.constructor.name.should.eql('Array')
-              results.length.should.eql(3)
-              results[0].name.should.eql('BigBird 3')
-              results[1].name.should.eql('BigBird 1')
-              results[2].name.should.eql('BigBird 2')
+              results.results.constructor.name.should.eql('Array')
+              results.results.length.should.eql(3)
+              results.results[0].name.should.eql('BigBird 3')
+              results.results[1].name.should.eql('BigBird 1')
+              results.results[2].name.should.eql('BigBird 2')
               done()
             }).catch((err) => {
               done(err)
@@ -255,11 +255,11 @@ describe('FileStore', function () {
 
           fileStore.insert(users, 'users', {}).then((results) => {
             fileStore.find({}, 'users', { sort: { name: 1 } }).then((results) => {
-              results.constructor.name.should.eql('Array')
-              results.length.should.eql(3)
-              results[0].name.should.eql('BigBird')
-              results[1].name.should.eql('Ernie')
-              results[2].name.should.eql('Oscar')
+              results.results.constructor.name.should.eql('Array')
+              results.results.length.should.eql(3)
+              results.results[0].name.should.eql('BigBird')
+              results.results[1].name.should.eql('Ernie')
+              results.results[2].name.should.eql('Oscar')
               done()
             }).catch((err) => {
               done(err)
@@ -282,11 +282,11 @@ describe('FileStore', function () {
 
           fileStore.insert(users, 'users', {}).then((results) => {
             fileStore.find({}, 'users', { sort: { name: -1 } }).then((results) => {
-              results.constructor.name.should.eql('Array')
-              results.length.should.eql(3)
-              results[0].name.should.eql('Oscar')
-              results[1].name.should.eql('Ernie')
-              results[2].name.should.eql('BigBird')
+              results.results.constructor.name.should.eql('Array')
+              results.results.length.should.eql(3)
+              results.results[0].name.should.eql('Oscar')
+              results.results[1].name.should.eql('Ernie')
+              results.results[2].name.should.eql('BigBird')
               done()
             }).catch((err) => {
               done(err)
@@ -309,10 +309,10 @@ describe('FileStore', function () {
 
           fileStore.insert(users, 'users', {}).then((results) => {
             fileStore.find({ colour: 'yellow' }, 'users', { sort: { name: 1 }, fields: { name: 1, age: 1 } }).then((results) => {
-              results.constructor.name.should.eql('Array')
-              results.length.should.eql(2)
+              results.results.constructor.name.should.eql('Array')
+              results.results.length.should.eql(2)
 
-              var bigBird = results[0]
+              var bigBird = results.results[0]
               should.exist(bigBird.name)
               should.exist(bigBird.age)
               should.exist(bigBird._id)
@@ -343,8 +343,8 @@ describe('FileStore', function () {
             fileStore.insert(users, 'users', {}).then((results) => {
               fileStore.update( { colour: 'green' }, 'users', { '$set': { colour: 'yellow' } }).then((results) => {
                 fileStore.find({ colour: 'yellow' }, 'users', {}).then((results) => {
-                  results.constructor.name.should.eql('Array')
-                  results.length.should.eql(3)
+                  results.results.constructor.name.should.eql('Array')
+                  results.results.length.should.eql(3)
                   done()
                 }).catch((err) => {
                   done(err)
@@ -373,9 +373,9 @@ describe('FileStore', function () {
             fileStore.insert(users, 'users', {}).then((results) => {
               fileStore.update( { colour: 'green' }, 'users', { '$inc': { age: 10 } }).then((results) => {
                 fileStore.find({ colour: 'green' }, 'users', {}).then((results) => {
-                  results.constructor.name.should.eql('Array')
-                  results.length.should.eql(1)
-                  results[0].age.should.eql(19)
+                  results.results.constructor.name.should.eql('Array')
+                  results.results.length.should.eql(1)
+                  results.results[0].age.should.eql(19)
                   done()
                 }).catch((err) => {
                   done(err)
@@ -405,8 +405,8 @@ describe('FileStore', function () {
           fileStore.insert(users, 'users', {}).then((results) => {
             fileStore.delete( { colour: 'green' }, 'users').then((results) => {
               fileStore.find({}, 'users', {}).then((results) => {
-                results.constructor.name.should.eql('Array')
-                results.length.should.eql(2)
+                results.results.constructor.name.should.eql('Array')
+                results.results.length.should.eql(2)
                 done()
               }).catch((err) => {
                 done(err)
@@ -463,12 +463,12 @@ describe('FileStore', function () {
           contentStore.insert({ name: 'Jim' }, 'users', {}).then((results) => {
             authStore.insert({ token: '123456123456123456123456' }, 'token-store', {}).then((results) => {
               contentStore.find({ name: 'Jim' }, 'users', {}).then((results) => {
-                results.constructor.name.should.eql('Array')
-                results[0].name.should.eql('Jim')
+                results.results.constructor.name.should.eql('Array')
+                results.results[0].name.should.eql('Jim')
 
                 authStore.find({ token: '123456123456123456123456' }, 'token-store', {}).then((results) => {
-                  results.constructor.name.should.eql('Array')
-                  results[0].token.should.eql('123456123456123456123456')
+                  results.results.constructor.name.should.eql('Array')
+                  results.results[0].token.should.eql('123456123456123456123456')
                   done()
                 })
               })

@@ -8,6 +8,11 @@ var conf = convict({
     env: "NODE_ENV",
     arg: "node_env"
   },
+  connectWithCollection: {
+    doc: "",
+    format: Boolean,
+    default: false,
+  },
   database: {
     path: {
       doc: "",

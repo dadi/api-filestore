@@ -12,6 +12,7 @@
   "author": "James Lambie <jameslambie@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "@dadi/metadata": "^1.0.0",
     "convict": "^2.0.0",
     "debug": "^2.6.0",
     "lokijs": "1.4.3",
