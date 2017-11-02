@@ -200,7 +200,7 @@ describe('FileStore', function () {
 
           fileStore.insert({ data: users, collection: 'users', schema: {}}).then((results) => {
             fileStore.find({ query: {}, collection: 'users'}).then((results) => {
-    
+
               results.results.constructor.name.should.eql('Array')
               results.results.length.should.eql(3)
 
@@ -414,6 +414,36 @@ describe('FileStore', function () {
               })
             }).catch((err) => {
               done(err)
+            })
+          }).catch((err) => {
+            done(err)
+          })
+        })
+      })
+    })
+  })
+
+  describe('index', function () {
+    it('should add indexes to the collection specified and return index names', function (done) {
+      var fileStore = new FileStoreAdapter()
+      fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
+        fileStore.getCollection('users').then(collection => {
+          collection.clear()
+
+          let indexes = [
+            {
+              keys: {
+                name: 1
+              }
+            }
+          ]
+
+          fileStore.index(collection, indexes).then(results => {
+            results[0].index.should.eql('name')
+
+            fileStore.getIndexes(collection).then(results => {
+              results[0].name.should.eql('name')
+              done()
             })
           }).catch((err) => {
             done(err)
