@@ -95,7 +95,7 @@ describe('FileStore', function () {
       fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
         var user = { name: 'David' }
 
-        fileStore.insert(user, 'users', {}).then((results) => {
+        fileStore.insert({ data: user, collection: 'users', schema: {}}).then((results) => {
           results.constructor.name.should.eql('Array')
           results[0].name.should.eql('David')
           done()
@@ -108,7 +108,7 @@ describe('FileStore', function () {
       fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
         var users = [{ name: 'Ernest' }, { name: 'Wallace' }]
 
-        fileStore.insert(users, 'users', {}).then((results) => {
+        fileStore.insert({ data: users, collection: 'users', schema: {}}).then((results) => {
           results.constructor.name.should.eql('Array')
           results.length.should.eql(2)
           results[0].name.should.eql('Ernest')
@@ -123,7 +123,7 @@ describe('FileStore', function () {
       fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
         var users = [{ name: 'Ernest' }, { name: 'Wallace' }]
 
-        fileStore.insert(users, 'users', {}).then((results) => {
+        fileStore.insert({ data: users, collection: 'users', schema: {}}).then((results) => {
           results.constructor.name.should.eql('Array')
           results.length.should.eql(2)
           results[0].name.should.eql('Ernest')
@@ -138,7 +138,7 @@ describe('FileStore', function () {
       fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
         var users = [{ _id: uuid.v4(), name: 'Ernest' }, { name: 'Wallace' }]
 
-        fileStore.insert(users, 'users', {}).then((results) => {
+        fileStore.insert({ data: users, collection: 'users', schema: {}}).then((results) => {
           results.constructor.name.should.eql('Array')
           results.length.should.eql(2)
           results[0].name.should.eql('Ernest')
@@ -155,8 +155,8 @@ describe('FileStore', function () {
       fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
         var users = [{ name: 'Ernest' }, { name: 'Wallace' }]
 
-        fileStore.insert(users, 'users', {}).then((results) => {
-          fileStore.find({ name: 'Wallace' }, 'users', {}).then((results) => {
+        fileStore.insert({ data: users, collection: 'users', schema: {}}).then((results) => {
+          fileStore.find({ query: { name: 'Wallace' }, collection: 'users', options: {}}).then((results) => {
             results.results.constructor.name.should.eql('Array')
             results.results[0].name.should.eql('Wallace')
             done()
@@ -174,8 +174,8 @@ describe('FileStore', function () {
 
           var users = [{ name: 'BigBird' }, { name: 'Ernie' }, { name: 'Oscar' }]
 
-          fileStore.insert(users, 'users', {}).then((results) => {
-            fileStore.find({}, 'users', { limit: 2 }).then((results) => {
+          fileStore.insert({ data: users, collection: 'users', schema: {}}).then((results) => {
+            fileStore.find({ query: {}, collection: 'users', options: { limit: 2 }}).then((results) => {
               results.results.constructor.name.should.eql('Array')
               results.results.length.should.eql(2)
               done()
@@ -189,7 +189,7 @@ describe('FileStore', function () {
       })
     })
 
-    it.skip('should sort records in ascending order by the `createdAt` property when no query or sort are provided', function (done) {
+    it('should sort records in ascending order by the `$loki` property when no query or sort are provided', function (done) {
       var fileStore = new FileStoreAdapter()
       fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
 
@@ -198,8 +198,9 @@ describe('FileStore', function () {
 
           var users = [{ name: 'Ernie' }, { name: 'Oscar' }, { name: 'BigBird' }]
 
-          fileStore.insert(users, 'users', {}).then((results) => {
-            fileStore.find({}, 'users').then((results) => {
+          fileStore.insert({ data: users, collection: 'users', schema: {}}).then((results) => {
+            fileStore.find({ query: {}, collection: 'users'}).then((results) => {
+    
               results.results.constructor.name.should.eql('Array')
               results.results.length.should.eql(3)
 
@@ -226,8 +227,8 @@ describe('FileStore', function () {
 
           var users = [{ name: 'BigBird 3' }, { name: 'BigBird 1' }, { name: 'BigBird 2' }]
 
-          fileStore.insert(users, 'users', {}).then((results) => {
-            fileStore.find({ name: { '$regex': 'Big' } }, 'users').then((results) => {
+          fileStore.insert({ data: users, collection: 'users', schema: {}}).then((results) => {
+            fileStore.find({ query: { name: { '$regex': 'Big' } }, collection: 'users'}).then((results) => {
               results.results.constructor.name.should.eql('Array')
               results.results.length.should.eql(3)
               results.results[0].name.should.eql('BigBird 3')
@@ -253,8 +254,8 @@ describe('FileStore', function () {
 
           var users = [{ name: 'Ernie' }, { name: 'Oscar' }, { name: 'BigBird' }]
 
-          fileStore.insert(users, 'users', {}).then((results) => {
-            fileStore.find({}, 'users', { sort: { name: 1 } }).then((results) => {
+          fileStore.insert({ data: users, collection: 'users', schema: {}}).then((results) => {
+            fileStore.find({ query: {}, collection: 'users', options: { sort: { name: 1 } }}).then((results) => {
               results.results.constructor.name.should.eql('Array')
               results.results.length.should.eql(3)
               results.results[0].name.should.eql('BigBird')
@@ -275,13 +276,13 @@ describe('FileStore', function () {
       var fileStore = new FileStoreAdapter()
       fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
 
-        fileStore.getCollection('users').then((collection) => {
+        fileStore.getCollection('users').then(collection => {
           collection.clear()
 
           var users = [{ name: 'Ernie' }, { name: 'Oscar' }, { name: 'BigBird' }]
 
-          fileStore.insert(users, 'users', {}).then((results) => {
-            fileStore.find({}, 'users', { sort: { name: -1 } }).then((results) => {
+          fileStore.insert({ data: users, collection: 'users', schema: {}}).then(results => {
+            fileStore.find({ query: {}, collection: 'users', options: { sort: { name: -1 } }}).then(results => {
               results.results.constructor.name.should.eql('Array')
               results.results.length.should.eql(3)
               results.results[0].name.should.eql('Oscar')
@@ -307,8 +308,8 @@ describe('FileStore', function () {
 
           var users = [{ name: 'Ernie', age: 7, colour: 'yellow' }, { name: 'Oscar', age: 9, colour: 'green' }, { name: 'BigBird', age: 13, colour: 'yellow' }]
 
-          fileStore.insert(users, 'users', {}).then((results) => {
-            fileStore.find({ colour: 'yellow' }, 'users', { sort: { name: 1 }, fields: { name: 1, age: 1 } }).then((results) => {
+          fileStore.insert({ data: users, collection: 'users', schema: {}}).then((results) => {
+            fileStore.find({ query: { colour: 'yellow' }, collection: 'users', options: { sort: { name: 1 }, fields: { name: 1, age: 1 } }}).then((results) => {
               results.results.constructor.name.should.eql('Array')
               results.results.length.should.eql(2)
 
@@ -340,9 +341,9 @@ describe('FileStore', function () {
 
             var users = [{ name: 'Ernie', age: 7, colour: 'yellow' }, { name: 'Oscar', age: 9, colour: 'green' }, { name: 'BigBird', age: 13, colour: 'yellow' }]
 
-            fileStore.insert(users, 'users', {}).then((results) => {
-              fileStore.update( { colour: 'green' }, 'users', { '$set': { colour: 'yellow' } }).then((results) => {
-                fileStore.find({ colour: 'yellow' }, 'users', {}).then((results) => {
+            fileStore.insert({ data: users, collection: 'users', schema: {}}).then((results) => {
+              fileStore.update({ query: { colour: 'green' }, collection: 'users', update: { '$set': { colour: 'yellow' } }}).then((results) => {
+                fileStore.find({ query: { colour: 'yellow' }, collection: 'users', options: {}}).then((results) => {
                   results.results.constructor.name.should.eql('Array')
                   results.results.length.should.eql(3)
                   done()
@@ -370,9 +371,9 @@ describe('FileStore', function () {
 
             var users = [{ name: 'Ernie', age: 7, colour: 'yellow' }, { name: 'Oscar', age: 9, colour: 'green' }, { name: 'BigBird', age: 13, colour: 'yellow' }]
 
-            fileStore.insert(users, 'users', {}).then((results) => {
-              fileStore.update( { colour: 'green' }, 'users', { '$inc': { age: 10 } }).then((results) => {
-                fileStore.find({ colour: 'green' }, 'users', {}).then((results) => {
+            fileStore.insert({ data: users, collection: 'users', schema: {}}).then((results) => {
+              fileStore.update({ query: { colour: 'green' }, collection: 'users', update: { '$inc': { age: 10 } }}).then((results) => {
+                fileStore.find({ query: { colour: 'green' }, collection: 'users', options: {}}).then((results) => {
                   results.results.constructor.name.should.eql('Array')
                   results.results.length.should.eql(1)
                   results.results[0].age.should.eql(19)
@@ -402,9 +403,9 @@ describe('FileStore', function () {
 
           var users = [{ name: 'Ernie', age: 7, colour: 'yellow' }, { name: 'Oscar', age: 9, colour: 'green' }, { name: 'BigBird', age: 13, colour: 'yellow' }]
 
-          fileStore.insert(users, 'users', {}).then((results) => {
-            fileStore.delete( { colour: 'green' }, 'users').then((results) => {
-              fileStore.find({}, 'users', {}).then((results) => {
+          fileStore.insert({ data: users, collection: 'users', schema: {}}).then((results) => {
+            fileStore.delete({ query: { colour: 'green' }, collection: 'users'}).then((results) => {
+              fileStore.find({ query: {}, collection: 'users', options: {}}).then((results) => {
                 results.results.constructor.name.should.eql('Array')
                 results.results.length.should.eql(2)
                 done()
@@ -428,14 +429,14 @@ describe('FileStore', function () {
       fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
         var user = { name: 'David' }
 
-        fileStore.insert(user, 'users', {}).then((results) => {
+        fileStore.insert({ data: user, collection: 'users', schema: {}}).then((results) => {
           results.constructor.name.should.eql('Array')
           results[0].name.should.eql('David')
 
           fileStore.connect({ database: 'content', collection: 'posts' }).then(() => {
             var post = { title: 'David on Holiday' }
 
-            fileStore.insert(post, 'posts', {}).then((results) => {
+            fileStore.insert({ data: post, collection: 'posts',  schema: {}}).then((results) => {
               results.constructor.name.should.eql('Array')
               results[0].title.should.eql('David on Holiday')
 
@@ -460,13 +461,13 @@ describe('FileStore', function () {
 
       contentStore.connect({ database: 'content' }).then(() => {
         authStore.connect({ database: 'auth' }).then(() => {
-          contentStore.insert({ name: 'Jim' }, 'users', {}).then((results) => {
-            authStore.insert({ token: '123456123456123456123456' }, 'token-store', {}).then((results) => {
-              contentStore.find({ name: 'Jim' }, 'users', {}).then((results) => {
+          contentStore.insert({ data: { name: 'Jim' }, collection: 'users', schema: {}}).then((results) => {
+            authStore.insert({ data: { token: '123456123456123456123456' }, collection: 'token-store', schema: {}}).then((results) => {
+              contentStore.find({ query: { name: 'Jim' }, collection: 'users', options: {}}).then((results) => {
                 results.results.constructor.name.should.eql('Array')
                 results.results[0].name.should.eql('Jim')
 
-                authStore.find({ token: '123456123456123456123456' }, 'token-store', {}).then((results) => {
+                authStore.find({ query: { token: '123456123456123456123456' }, collection: 'token-store', options: {}}).then((results) => {
                   results.results.constructor.name.should.eql('Array')
                   results.results[0].token.should.eql('123456123456123456123456')
                   done()
