@@ -40,7 +40,7 @@
     "istanbul": "^1.1.0-alpha.1",
     "istanbul-cobertura-badger": "^1.1.0",
     "mocha": "~3.2.0",
-    "semantic-release": "8.2.0",
+    "semantic-release": "~7.0.0",
     "should": "~4.0.4",
     "sinon": "~1.17.6",
     "snazzy": "^6.0.0",
