@@ -16,21 +16,21 @@ describe('FileStore', function () {
     done()
   })
 
-  afterEach(function(done) {
-    setTimeout(function() {
+  afterEach(function (done) {
+    setTimeout(function () {
       done()
     }, 1000)
   })
 
   after(function (done) {
     console.log('\n  Finished, waiting for database to be written to disk...')
-    setTimeout(function() {
+    setTimeout(function () {
       try {
         fs.unlinkSync(path.resolve(path.join(config.get('database.path'), 'auth.db')))
         fs.unlinkSync(path.resolve(path.join(config.get('database.path'), 'content.db')))
         fs.rmdirSync(path.resolve(config.get('database.path')))
         fs.rmdirSync(path.resolve(config.get('database.path') + '2'))
-      } catch(err) {
+      } catch (err) {
         console.log(err)
       }
 
@@ -168,7 +168,6 @@ describe('FileStore', function () {
     it('should return the number of records requested when using `limit`', function (done) {
       var fileStore = new FileStoreAdapter()
       fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
-
         fileStore.getCollection('users').then((collection) => {
           collection.clear()
 
@@ -192,7 +191,6 @@ describe('FileStore', function () {
     it('should sort records in ascending order by the `$loki` property when no query or sort are provided', function (done) {
       var fileStore = new FileStoreAdapter()
       fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
-
         fileStore.getCollection('users').then((collection) => {
           collection.clear()
 
@@ -200,7 +198,6 @@ describe('FileStore', function () {
 
           fileStore.insert({ data: users, collection: 'users', schema: {}}).then((results) => {
             fileStore.find({ query: {}, collection: 'users'}).then((results) => {
-
               results.results.constructor.name.should.eql('Array')
               results.results.length.should.eql(3)
 
@@ -221,7 +218,6 @@ describe('FileStore', function () {
     it('should sort records in ascending order by the query property when no sort is provided', function (done) {
       var fileStore = new FileStoreAdapter()
       fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
-
         fileStore.getCollection('users').then((collection) => {
           collection.clear()
 
@@ -248,7 +244,6 @@ describe('FileStore', function () {
     it('should sort records in ascending order by the specified property', function (done) {
       var fileStore = new FileStoreAdapter()
       fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
-
         fileStore.getCollection('users').then((collection) => {
           collection.clear()
 
@@ -275,7 +270,6 @@ describe('FileStore', function () {
     it('should sort records in descending order by the specified property', function (done) {
       var fileStore = new FileStoreAdapter()
       fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
-
         fileStore.getCollection('users').then(collection => {
           collection.clear()
 
@@ -302,7 +296,6 @@ describe('FileStore', function () {
     it('should return only the fields specified by the `fields` property', function (done) {
       var fileStore = new FileStoreAdapter()
       fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
-
         fileStore.getCollection('users').then((collection) => {
           collection.clear()
 
@@ -335,7 +328,6 @@ describe('FileStore', function () {
       it('should update documents matching the query', function (done) {
         var fileStore = new FileStoreAdapter()
         fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
-
           fileStore.getCollection('users').then((collection) => {
             collection.clear()
 
@@ -365,7 +357,6 @@ describe('FileStore', function () {
       it('should update documents matching the query', function (done) {
         var fileStore = new FileStoreAdapter()
         fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
-
           fileStore.getCollection('users').then((collection) => {
             collection.clear()
 
@@ -391,13 +382,44 @@ describe('FileStore', function () {
         })
       })
     })
+
+    describe('$push', function () {
+      it('should update documents matching the query', function (done) {
+        var fileStore = new FileStoreAdapter()
+        fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
+          fileStore.getCollection('users').then((collection) => {
+            collection.clear()
+
+            var users = [{ name: 'Ernie', colours: ['yellow'] }, { name: 'Oscar', colours: ['green'] }, { name: 'BigBird', colours: ['yellow'] }]
+
+            fileStore.insert({ data: users, collection: 'users', schema: {}}).then((results) => {
+              fileStore.update({ query: { name: 'Ernie' }, collection: 'users', update: { '$push': { colours: 'red' } }}).then((results) => {
+                fileStore.find({ query: { name: 'Ernie' }, collection: 'users', options: {}}).then((results) => {
+                  results.results.constructor.name.should.eql('Array')
+                  results.results.length.should.eql(1)
+                  results.results[0].colours.should.be.Array
+                  results.results[0].colours[0].should.eql('yellow')
+                  results.results[0].colours[1].should.eql('red')
+                  done()
+                }).catch((err) => {
+                  done(err)
+                })
+              }).catch((err) => {
+                done(err)
+              })
+            }).catch((err) => {
+              done(err)
+            })
+          })
+        })
+      })
+    })
   })
 
   describe('delete', function () {
     it('should delete documents matching the query', function (done) {
       var fileStore = new FileStoreAdapter()
       fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
-
         fileStore.getCollection('users').then((collection) => {
           collection.clear()
 
@@ -466,7 +488,7 @@ describe('FileStore', function () {
           fileStore.connect({ database: 'content', collection: 'posts' }).then(() => {
             var post = { title: 'David on Holiday' }
 
-            fileStore.insert({ data: post, collection: 'posts',  schema: {}}).then((results) => {
+            fileStore.insert({ data: post, collection: 'posts', schema: {}}).then((results) => {
               results.constructor.name.should.eql('Array')
               results[0].title.should.eql('David on Holiday')
 

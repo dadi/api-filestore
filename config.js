@@ -1,31 +1,31 @@
-var convict = require('convict')
+const convict = require('convict')
 
-var conf = convict({
+const conf = convict({
   env: {
-    doc: "The applicaton environment.",
-    format: ["production", "development", "test", "qa"],
-    default: "development",
-    env: "NODE_ENV",
-    arg: "node_env"
+    doc: 'The applicaton environment.',
+    format: ['production', 'development', 'test', 'qa'],
+    default: 'development',
+    env: 'NODE_ENV',
+    arg: 'node_env'
   },
   connectWithCollection: {
-    doc: "",
+    doc: '',
     format: Boolean,
-    default: false,
+    default: false
   },
   database: {
     path: {
-      doc: "",
+      doc: '',
       format: String,
-      default: "workspace/test.db"
+      default: 'workspace/test.db'
     },
     autosaveInterval: {
-      doc: "",
+      doc: '',
       format: Number,
       default: 5000
     },
     serializationMethod: {
-      doc: "",
+      doc: '',
       format: ['normal', 'pretty'],
       default: 'normal'
     }
@@ -33,9 +33,6 @@ var conf = convict({
 })
 
 // Load environment dependent configuration
-var env = conf.get('env')
-conf.loadFile('./config/filestore.' + env + '.json')
-
-conf.validate({strict: false})
+conf.loadFile('./config/filestore.' + conf.get('env') + '.json')
 
 module.exports = conf

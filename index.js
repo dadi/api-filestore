@@ -1,2 +1,4 @@
 module.exports = require(__dirname + '/lib')
-module.exports.Config = require(__dirname + '/config')
+module.exports.settings = {
+  internalProperties: ['$loki', 'meta']
+}
