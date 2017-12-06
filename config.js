@@ -1,6 +1,6 @@
-var convict = require('convict')
+const convict = require('convict')
 
-var conf = convict({
+const conf = convict({
   env: {
     doc: "The applicaton environment.",
     format: ["production", "development", "test", "qa"],
@@ -33,9 +33,8 @@ var conf = convict({
 })
 
 // Load environment dependent configuration
-var env = conf.get('env')
-conf.loadFile('./config/filestore.' + env + '.json')
+const env = conf.get('env')
 
-conf.validate({strict: false})
+conf.loadFile('./config/filestore.' + env + '.json')
 
 module.exports = conf
