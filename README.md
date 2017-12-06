@@ -8,7 +8,7 @@
 
 ## Requirements
 
-* [DADI API](https://www.npmjs.com/package/@dadi/api) Version 2.0.0 or greater
+* [DADI API](https://www.npmjs.com/package/@dadi/api) Version 3.0.0 or greater
 
 ## Install
 
