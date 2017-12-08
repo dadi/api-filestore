@@ -75,9 +75,10 @@ describe('FileStore', function () {
   describe('connect', function () {
     it('should create and return database when connecting', function (done) {
       var fileStore = new FileStoreAdapter()
-      fileStore.connect({ database: 'content' })
-      should.exist(fileStore.database)
-      done()
+      fileStore.connect({ database: 'content' }).then(() => {
+        should.exist(fileStore.database)
+        done()
+      })
     })
 
     it('should have readyState == 1 when connected', function (done) {
