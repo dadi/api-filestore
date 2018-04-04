@@ -1,6 +1,4 @@
-module.exports = require('./lib')
-
+module.exports = require(__dirname + '/lib')
 module.exports.settings = {
-  connectWithCollection: false,
   internalProperties: ['$loki', 'meta']
 }
