@@ -124,6 +124,65 @@ describe('FileStore', function () {
     })
   })
 
+  describe('getFields', function () {
+    it('should return an array of fields when given an object', function (done) {
+      let fileStore = new FileStoreAdapter()
+      let fields = {'_id': 1, 'fieldOne': 1, 'fieldTwo': 1}
+      let prepared = fileStore.getFields(fields)
+
+      prepared.should.eql(['_id', 'fieldOne', 'fieldTwo'])
+      done()
+    })
+
+    it('should return an array of fields when given an array', function (done) {
+      let fileStore = new FileStoreAdapter()
+      let fields = ['_id', 'fieldOne', 'fieldTwo']
+      let prepared = fileStore.getFields(fields)
+
+      prepared.should.eql(['_id', 'fieldOne', 'fieldTwo'])
+      done()
+    })
+
+    it('should add `_id` if not specified', function (done) {
+      let fileStore = new FileStoreAdapter()
+      let fields = ['fieldOne', 'fieldTwo']
+      let prepared = fileStore.getFields(fields)
+
+      prepared.should.eql(['fieldOne', 'fieldTwo', '_id'])
+      done()
+    })
+  })
+
+  describe('getFieldOrParentSchema', function () {
+    it('should return a field from the schema by key', function (done) {
+      let fileStore = new FileStoreAdapter()
+      let schema = {
+        name: {
+          type: 'String'
+        }
+      }
+
+      let field = fileStore.getFieldOrParentSchema('name', schema)
+
+      field.type.should.eql('String')
+      done()
+    })
+
+    it('should return a field from the schema by parent key', function (done) {
+      let fileStore = new FileStoreAdapter()
+      let schema = {
+        name: {
+          type: 'String'
+        }
+      }
+
+      let field = fileStore.getFieldOrParentSchema('name.first', schema)
+
+      field.type.should.eql('String')
+      done()
+    })
+  })
+
   describe('insert', function () {
     it('should insert a single document into the database', function (done) {
       let fileStore = new FileStoreAdapter()
