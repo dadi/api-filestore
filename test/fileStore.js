@@ -414,6 +414,36 @@ describe('FileStore', function () {
         })
       })
     })
+
+    it('should return only the fields specified by the `fields` property when using nested properties', function (done) {
+      let fileStore = new FileStoreAdapter()
+      fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
+        fileStore.getCollection('users').then((collection) => {
+          collection.clear()
+
+          let users = [{ name: 'Ernie', data: { age: 7, colour: 'yellow' } }]
+
+          fileStore.insert({ data: users, collection: 'users', schema: {}}).then((results) => {
+            fileStore.find({ query: { name: 'Ernie' }, collection: 'users', options: { sort: { name: 1 }, fields: { 'data.age': 1 } }}).then((results) => {
+              results.results.constructor.name.should.eql('Array')
+              results.results.length.should.eql(1)
+
+              let bigBird = results.results[0]
+              should.exist(bigBird.data)
+              should.exist(bigBird.data.age)
+              should.exist(bigBird._id)
+              should.not.exist(bigBird.name)
+              should.not.exist(bigBird.data.colour)
+              done()
+            }).catch((err) => {
+              done(err)
+            })
+          }).catch((err) => {
+            done(err)
+          })
+        })
+      })
+    })
   })
 
   describe('update', function () {
@@ -623,6 +653,31 @@ describe('FileStore', function () {
                 })
               })
             })
+          })
+        })
+      })
+    })
+
+    it('should clear collections when calling dropDatabase', function (done) {
+      let fileStore = new FileStoreAdapter()
+      fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
+        fileStore.getCollection('users').then((collection) => {
+          collection.clear()
+
+          let users = [{ name: 'Ernie' }, { name: 'Oscar' }, { name: 'BigBird' }]
+
+          fileStore.insert({ data: users, collection: 'users', schema: {}}).then((results) => {
+            fileStore.dropDatabase('users').then(() => {
+              fileStore.find({ query: {}, collection: 'users'}).then((results) => {
+                results.results.constructor.name.should.eql('Array')
+                results.results.length.should.eql(0)
+                done()
+              }).catch((err) => {
+                done(err)
+              })              
+            })
+          }).catch((err) => {
+            done(err)
           })
         })
       })
