@@ -1,5 +1,4 @@
 const convict = require('convict')
-
 const conf = convict({
   env: {
     doc: 'The applicaton environment.',
@@ -9,30 +8,30 @@ const conf = convict({
     arg: 'node_env'
   },
   connectWithCollection: {
-    doc: '',
+    doc: 'Whether to use collection names as part of the connection string, generating a new database instance for each collection',
     format: Boolean,
     default: false
   },
   database: {
     path: {
-      doc: '',
+      doc: 'Path to the database file',
       format: String,
-      default: 'workspace/test.db'
+      default: 'workspace/db'
     },
     autosaveInterval: {
-      doc: '',
+      doc: 'Interval (in milliseconds) for persisting data to disk',
       format: Number,
       default: 5000
     },
     serializationMethod: {
-      doc: '',
+      doc: 'LokiJS serialisation method',
       format: ['normal', 'pretty'],
       default: 'normal'
     }
   }
 })
 
-// Load environment dependent configuration
-conf.loadFile('./config/filestore.' + conf.get('env') + '.json')
+// Load environment dependent configuration.
+conf.loadFile(`./config/filestore.${conf.get('env')}.json`)
 
 module.exports = conf
