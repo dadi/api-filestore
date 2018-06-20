@@ -17,6 +17,8 @@ describe('FileStore', function () {
   })
 
   afterEach(function (done) {
+    FileStoreAdapter.reset()
+
     setTimeout(function () {
       done()
     }, 1000)
@@ -26,10 +28,7 @@ describe('FileStore', function () {
     console.log('\n  Finished, waiting for database to be written to disk...')
     setTimeout(function () {
       try {
-        fs.unlinkSync(path.resolve(path.join(config.get('database.path'), 'auth.db')))
-        fs.unlinkSync(path.resolve(path.join(config.get('database.path'), 'content.db')))
-        fs.rmdirSync(path.resolve(config.get('database.path')))
-        fs.rmdirSync(path.resolve(config.get('database.path') + '2'))
+        fs.unlinkSync(path.resolve(config.get('database.path')))
       } catch (err) {
         console.log(err)
       }
@@ -54,7 +53,7 @@ describe('FileStore', function () {
     it('should load config if no options supplied', function (done) {
       let fileStore = new FileStoreAdapter()
       should.exist(fileStore.config)
-      fileStore.config.database.path.should.eql('test/workspace')
+      fileStore.config.database.path.should.eql('test/db')
       done()
     })
 
@@ -586,11 +585,15 @@ describe('FileStore', function () {
               results.constructor.name.should.eql('Array')
               results[0].title.should.eql('David on Holiday')
 
-              let u = fileStore.database.getCollection('users')
-              let p = fileStore.database.getCollection('posts')
-              should.exist(u)
-              should.exist(p)
-              done()
+              fileStore.getCollection('users').then(collection => {
+                should.exist(collection)
+
+                fileStore.getCollection('posts').then(collection => {
+                  should.exist(collection)
+
+                  done()
+                })
+              })
             }).catch((err) => {
               done(err)
             })
