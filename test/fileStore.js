@@ -17,6 +17,8 @@ describe('FileStore', function () {
   })
 
   afterEach(function (done) {
+    FileStoreAdapter.reset()
+
     setTimeout(function () {
       done()
     }, 1000)
@@ -26,10 +28,7 @@ describe('FileStore', function () {
     console.log('\n  Finished, waiting for database to be written to disk...')
     setTimeout(function () {
       try {
-        fs.unlinkSync(path.resolve(path.join(config.get('database.path'), 'auth.db')))
-        fs.unlinkSync(path.resolve(path.join(config.get('database.path'), 'content.db')))
-        fs.rmdirSync(path.resolve(config.get('database.path')))
-        fs.rmdirSync(path.resolve(config.get('database.path') + '2'))
+        fs.unlinkSync(path.resolve(config.get('database.path')))
       } catch (err) {
         console.log(err)
       }
@@ -54,7 +53,7 @@ describe('FileStore', function () {
     it('should load config if no options supplied', function (done) {
       let fileStore = new FileStoreAdapter()
       should.exist(fileStore.config)
-      fileStore.config.database.path.should.eql('test/workspace')
+      fileStore.config.database.path.should.eql('test/db')
       done()
     })
 
@@ -415,6 +414,36 @@ describe('FileStore', function () {
         })
       })
     })
+
+    it('should return only the fields specified by the `fields` property when using nested properties', function (done) {
+      let fileStore = new FileStoreAdapter()
+      fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
+        fileStore.getCollection('users').then((collection) => {
+          collection.clear()
+
+          let users = [{ name: 'Ernie', data: { age: 7, colour: 'yellow' } }]
+
+          fileStore.insert({ data: users, collection: 'users', schema: {}}).then((results) => {
+            fileStore.find({ query: { name: 'Ernie' }, collection: 'users', options: { sort: { name: 1 }, fields: { 'data.age': 1 } }}).then((results) => {
+              results.results.constructor.name.should.eql('Array')
+              results.results.length.should.eql(1)
+
+              let bigBird = results.results[0]
+              should.exist(bigBird.data)
+              should.exist(bigBird.data.age)
+              should.exist(bigBird._id)
+              should.not.exist(bigBird.name)
+              should.not.exist(bigBird.data.colour)
+              done()
+            }).catch((err) => {
+              done(err)
+            })
+          }).catch((err) => {
+            done(err)
+          })
+        })
+      })
+    })
   })
 
   describe('update', function () {
@@ -586,11 +615,15 @@ describe('FileStore', function () {
               results.constructor.name.should.eql('Array')
               results[0].title.should.eql('David on Holiday')
 
-              let u = fileStore.database.getCollection('users')
-              let p = fileStore.database.getCollection('posts')
-              should.exist(u)
-              should.exist(p)
-              done()
+              fileStore.getCollection('users').then(collection => {
+                should.exist(collection)
+
+                fileStore.getCollection('posts').then(collection => {
+                  should.exist(collection)
+
+                  done()
+                })
+              })
             }).catch((err) => {
               done(err)
             })
@@ -620,6 +653,31 @@ describe('FileStore', function () {
                 })
               })
             })
+          })
+        })
+      })
+    })
+
+    it('should clear collections when calling dropDatabase', function (done) {
+      let fileStore = new FileStoreAdapter()
+      fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
+        fileStore.getCollection('users').then((collection) => {
+          collection.clear()
+
+          let users = [{ name: 'Ernie' }, { name: 'Oscar' }, { name: 'BigBird' }]
+
+          fileStore.insert({ data: users, collection: 'users', schema: {}}).then((results) => {
+            fileStore.dropDatabase('users').then(() => {
+              fileStore.find({ query: {}, collection: 'users'}).then((results) => {
+                results.results.constructor.name.should.eql('Array')
+                results.results.length.should.eql(0)
+                done()
+              }).catch((err) => {
+                done(err)
+              })              
+            })
+          }).catch((err) => {
+            done(err)
           })
         })
       })
