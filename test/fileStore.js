@@ -123,31 +123,100 @@ describe('FileStore', function () {
     })
   })
 
-  describe('getFields', function () {
-    it('should return an array of fields when given an object', function (done) {
-      let fileStore = new FileStoreAdapter()
-      let fields = {'_id': 1, 'fieldOne': 1, 'fieldTwo': 1}
-      let prepared = fileStore.getFields(fields)
+  describe('applyFieldsFilterToResults', function () {
+    let documents = [
+      {
+        _id: 1,
+        name: 'Ernie',
+        age: 7,
+        colour: 'yellow'
+      },
+      {
+        _id: 2,
+        name: 'Oscar',
+        age: 9,
+        colour: 'green'
+      },
+      {
+        _id: 3,
+        name: 'BigBird',
+        age: 13,
+        colour: 'yellow'
+      }
+    ]
 
-      prepared.should.eql(['_id', 'fieldOne', 'fieldTwo'])
+    it('should apply a field projection (of type "includes") to an array of documents, returning the modified array', function (done) {
+      let fileStore = new FileStoreAdapter()
+      let fields = {'_id': 1, 'name': 1, 'age': 1}
+      let modifiedDocuments = fileStore.applyFieldsFilterToResults(fields, documents)
+
+      modifiedDocuments.should.eql([
+        {
+          _id: 1,
+          name: 'Ernie',
+          age: 7
+        },
+        {
+          _id: 2,
+          name: 'Oscar',
+          age: 9
+        },
+        {
+          _id: 3,
+          name: 'BigBird',
+          age: 13
+        }
+      ])
+
       done()
     })
 
-    it('should return an array of fields when given an array', function (done) {
+    it('should apply a field projection (of type "includes") to an array of documents, returning the modified array', function (done) {
       let fileStore = new FileStoreAdapter()
-      let fields = ['_id', 'fieldOne', 'fieldTwo']
-      let prepared = fileStore.getFields(fields)
+      let fields = {'name': 0, 'age': 0}
+      let modifiedDocuments = fileStore.applyFieldsFilterToResults(fields, documents)
 
-      prepared.should.eql(['_id', 'fieldOne', 'fieldTwo'])
+      modifiedDocuments.should.eql([
+        {
+          _id: 1,
+          colour: 'yellow'
+        },
+        {
+          _id: 2,
+          colour: 'green'
+        },
+        {
+          _id: 3,
+          colour: 'yellow'
+        }
+      ])
+
       done()
     })
 
-    it('should add `_id` if not specified', function (done) {
+    it('should apply a field projection (of type "includes", in array format) to an array of documents, returning the modified array', function (done) {
       let fileStore = new FileStoreAdapter()
-      let fields = ['fieldOne', 'fieldTwo']
-      let prepared = fileStore.getFields(fields)
+      let fields = ['name', 'age']
+      let modifiedDocuments = fileStore.applyFieldsFilterToResults(fields, documents)
 
-      prepared.should.eql(['fieldOne', 'fieldTwo', '_id'])
+      modifiedDocuments.should.eql([
+        {
+          _id: 1,
+          name: 'Ernie',
+          age: 7
+        },
+        {
+          _id: 2,
+          name: 'Oscar',
+          age: 9
+        },
+        {
+          _id: 3,
+          name: 'BigBird',
+          age: 13
+        }
+      ])
+
       done()
     })
   })
@@ -386,13 +455,29 @@ describe('FileStore', function () {
       })
     })
 
-    it('should return only the fields specified by the `fields` property', function (done) {
+    it('should return only the fields specified by the `fields` property (projection of type "includes")', function (done) {
       let fileStore = new FileStoreAdapter()
       fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
         fileStore.getCollection('users').then((collection) => {
           collection.clear()
 
-          let users = [{ name: 'Ernie', age: 7, colour: 'yellow' }, { name: 'Oscar', age: 9, colour: 'green' }, { name: 'BigBird', age: 13, colour: 'yellow' }]
+          let users = [
+            {
+              name: 'Ernie',
+              age: 7,
+              colour: 'yellow'
+            },
+            {
+              name: 'Oscar',
+              age: 9,
+              colour: 'green'
+            },
+            {
+              name: 'BigBird',
+              age: 13,
+              colour: 'yellow'
+            }
+          ]
 
           fileStore.insert({ data: users, collection: 'users', schema: {}}).then((results) => {
             fileStore.find({ query: { colour: 'yellow' }, collection: 'users', options: { sort: { name: 1 }, fields: { name: 1, age: 1 } }}).then((results) => {
@@ -415,7 +500,52 @@ describe('FileStore', function () {
       })
     })
 
-    it('should return only the fields specified by the `fields` property when using nested properties', function (done) {
+    it('should return only the fields specified by the `fields` property (projection of type "excludes")', function (done) {
+      let fileStore = new FileStoreAdapter()
+      fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
+        fileStore.getCollection('users').then((collection) => {
+          collection.clear()
+
+          let users = [
+            {
+              name: 'Ernie',
+              age: 7,
+              colour: 'yellow'
+            },
+            {
+              name: 'Oscar',
+              age: 9,
+              colour: 'green'
+            },
+            {
+              name: 'BigBird',
+              age: 13,
+              colour: 'yellow'
+            }
+          ]
+
+          fileStore.insert({ data: users, collection: 'users', schema: {}}).then((results) => {
+            fileStore.find({ query: { colour: 'yellow' }, collection: 'users', options: { sort: { name: 1 }, fields: { age: 0 } }}).then((results) => {
+              results.results.constructor.name.should.eql('Array')
+              results.results.length.should.eql(2)
+
+              let bigBird = results.results[0]
+              should.exist(bigBird.name)
+              should.not.exist(bigBird.age)
+              should.exist(bigBird._id)
+              should.exist(bigBird.colour)
+              done()
+            }).catch((err) => {
+              done(err)
+            })
+          }).catch((err) => {
+            done(err)
+          })
+        })
+      })
+    })
+
+    it('should return only the fields specified by the `fields` property when using nested properties (projection of type "includes")', function (done) {
       let fileStore = new FileStoreAdapter()
       fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
         fileStore.getCollection('users').then((collection) => {
@@ -434,6 +564,36 @@ describe('FileStore', function () {
               should.exist(bigBird._id)
               should.not.exist(bigBird.name)
               should.not.exist(bigBird.data.colour)
+              done()
+            }).catch((err) => {
+              done(err)
+            })
+          }).catch((err) => {
+            done(err)
+          })
+        })
+      })
+    })
+
+    it('should return only the fields specified by the `fields` property when using nested properties (projection of type "excludes")', function (done) {
+      let fileStore = new FileStoreAdapter()
+      fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
+        fileStore.getCollection('users').then((collection) => {
+          collection.clear()
+
+          let users = [{ name: 'Ernie', data: { age: 7, colour: 'yellow' } }]
+
+          fileStore.insert({ data: users, collection: 'users', schema: {}}).then((results) => {
+            fileStore.find({ query: { name: 'Ernie' }, collection: 'users', options: { sort: { name: 1 }, fields: { 'data.age': 0 } }}).then((results) => {
+              results.results.constructor.name.should.eql('Array')
+              results.results.length.should.eql(1)
+
+              let bigBird = results.results[0]
+              should.exist(bigBird.data)
+              should.not.exist(bigBird.data.age)
+              should.exist(bigBird._id)
+              should.not.exist(bigBird.name)
+              should.exist(bigBird.data.colour)
               done()
             }).catch((err) => {
               done(err)
