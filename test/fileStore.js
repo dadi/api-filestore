@@ -2,9 +2,8 @@ const EventEmitter = require('events').EventEmitter
 const FileStoreAdapter = require('../lib')
 const fs = require('fs')
 const path = require('path')
-const querystring = require('querystring')
+const promiseQueue = require('js-promise-queue')
 const should = require('should')
-const url = require('url')
 const uuid = require('uuid')
 
 const config = require(__dirname + '/../config')
@@ -606,6 +605,109 @@ describe('FileStore', function () {
     })
   })
 
+  // Operator tests for:
+  // '$eq'
+  // $in'
+  // '$lte'
+  // '$lt'
+  // '$gte'
+  // '$gt'
+  describe('query operators', function () {
+    it('should handle all query operators', done => {
+      let fileStore = new FileStoreAdapter()
+
+      fileStore.connect({ database: 'content', collection: 'users' }).then(() => {
+        fileStore.getCollection('users').then((collection) => {
+          collection.clear()
+
+          let users = [
+            { name: 'Ernie', age: 7, colour: 'yellow' },
+            { name: 'BigBird', age: 17, colour: 'yellow' },
+            { name: 'Bert', age: 9, colour: 'orange' }
+          ]
+
+          fileStore.insert({ data: users, collection: 'users', schema: {}}).then(results => {
+            let queue = []
+            queue.push({ name: 'Ernie' })
+            queue.push({ colour: { '$eq': 'yellow' } })
+            queue.push({ age: { '$in': [7, 9] } })
+            queue.push({ age: { '$lt': 9 } })
+            queue.push({ age: { '$lte': 9 } })
+            queue.push({ age: { '$gt': 9 } })
+            queue.push({ age: { '$gte': 7 } })
+
+            function testFn (query) {
+              return fileStore.find({
+                query: query,
+                collection: 'users',
+                options: {},
+                schema: {},
+                settings: {}
+              })
+            }
+
+            promiseQueue(queue, testFn, {
+              interval: 300
+            }).then(results => {
+              let result = results[0].results[0]
+              if (result && result.name === 'Ernie') {
+                console.log(' = OK')
+              } else {
+                done(new Error('Implicit equality query failed with ' + JSON.stringify(result)))
+              }
+
+              result = results[1].results[0]
+              if (result && result.colour === 'yellow') {
+                console.log(' $eq OK')
+              } else {
+                done(new Error('$eq query failed with ' + JSON.stringify(result)))
+              }
+
+              result = results[2].results
+              if (result && result.length === 2 && (result[0].age === 7 || result[1].age === 9)) {
+                console.log(' $in OK')
+              } else {
+                done(new Error('$in query failed with ' + JSON.stringify(result)))
+              }
+
+              result = results[3].results
+              if (result && result.length === 1 && (result[0].age === 7)) {
+                console.log(' $lt OK')
+              } else {
+                done(new Error('$lt query failed with ' + JSON.stringify(result)))
+              }
+
+              result = results[4].results
+              if (result && result.length === 2 && (result[0].age === 7 || result[1].age === 9)) {
+                console.log(' $lte OK')
+              } else {
+                done(new Error('$lte query failed with ' + JSON.stringify(result)))
+              }
+
+              result = results[5].results
+              if (result && result.length === 1 && (result[0].age === 17)) {
+                console.log(' $gt OK')
+              } else {
+                done(new Error('$gt query failed with ' + JSON.stringify(result)))
+              }
+
+              result = results[6].results
+              if (result && result.length === 3) {
+                console.log(' $gte OK')
+              } else {
+                done(new Error('$gte query failed with ' + JSON.stringify(result)))
+              }
+
+              done()
+            })
+          })
+        })
+      }).catch(err => {
+        done(err)
+      })
+    })
+  })
+
   describe('update', function () {
     describe('$set', function () {
       it('should update documents matching the query', function (done) {
@@ -834,7 +936,7 @@ describe('FileStore', function () {
                 done()
               }).catch((err) => {
                 done(err)
-              })              
+              })
             })
           }).catch((err) => {
             done(err)

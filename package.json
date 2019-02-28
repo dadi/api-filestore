@@ -37,6 +37,7 @@
     "coveralls": "^3.0.1",
     "env-test": "^1.0.0",
     "istanbul": "^1.1.0-alpha.1",
+    "js-promise-queue": "^1.1.0",
     "mocha": "^5.2.0",
     "semantic-release": "^15.13.4",
     "should": "~4.0.4",
