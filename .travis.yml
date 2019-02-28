@@ -5,8 +5,9 @@ cache:
 notifications:
   email: false
 node_js:
+  - 'node'
+  - 'lts/*'
   - '8'
-  - '6'
 before_script:
   - npm prune
 after_success:
