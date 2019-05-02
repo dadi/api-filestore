@@ -3,3 +3,4 @@ node_modules
 coverage/*
 scripts/*.svg
 config/*.test.json
+.nyc_output/
