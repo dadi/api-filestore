@@ -14,5 +14,3 @@ before_script:
 branches:
   except:
     - /^v\d+\.\d+\.\d+$/
-services:
-  - mongodb

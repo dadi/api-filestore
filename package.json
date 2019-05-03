@@ -15,8 +15,7 @@
   "main": "index.js",
   "scripts": {
     "test": "snazzy 'lib/*.js' && env NODE_ENV=test ./node_modules/.bin/nyc --reporter=lcov ./node_modules/mocha/bin/_mocha test && ./node_modules/.bin/nyc report",
-    "posttest": "./scripts/coverage.js",
-    "travis-deploy-once": "travis-deploy-once"
+    "posttest": "./scripts/coverage.js"
   },
   "author": "James Lambie <jameslambie@gmail.com>",
   "license": "ISC",
@@ -42,7 +41,6 @@
     "should": "~4.0.4",
     "sinon": "~1.17.6",
     "snazzy": "^6.0.0",
-    "standard": "8.6.0",
-    "travis-deploy-once": "^5.0.11"
+    "standard": "8.6.0"
   }
 }
