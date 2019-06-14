@@ -1,6 +1,6 @@
 {
   "name": "@dadi/api-filestore",
-  "version": "0.0.0-development",
+  "version": "0.11.3",
   "description": "A JSON datastore adapter for DADI API",
   "keywords": [
     "dadi",
