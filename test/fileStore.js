@@ -120,6 +120,16 @@ describe('FileStore', function () {
 
       done()
     })
+
+    it('should replace `null` with `$exists: false`', function (done) {
+      let fileStore = new FileStoreAdapter()
+      let query = { 'fieldOne': null }
+      let prepared = fileStore.prepareQuery(query, {})
+
+      prepared.should.eql({ 'fieldOne': { '$exists': false } })
+
+      done()
+    })    
   })
 
   describe('applyFieldsFilterToResults', function () {
