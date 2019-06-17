@@ -1,6 +1,7 @@
 const EventEmitter = require('events').EventEmitter
 const FileStoreAdapter = require('../lib')
 const fs = require('fs')
+const packageManifest = require('../package.json')
 const path = require('path')
 const promiseQueue = require('js-promise-queue')
 const should = require('should')
@@ -66,6 +67,13 @@ describe('FileStore', function () {
     it('should have readyState == 0 when initialised', function (done) {
       let fileStore = new FileStoreAdapter()
       fileStore.readyState.should.eql(0)
+      done()
+    })
+
+    it('should expose a handshake function', function (done) {
+      let fileStore = new FileStoreAdapter()
+
+      fileStore.handshake().version.should.eql(packageManifest.version)
       done()
     })
   })
