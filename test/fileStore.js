@@ -44,21 +44,21 @@ describe('FileStore', function() {
     })
 
     it('should inherit from EventEmitter', function(done) {
-      let fileStore = new FileStoreAdapter()
+      const fileStore = new FileStoreAdapter()
       fileStore.should.be.an.instanceOf(EventEmitter)
       fileStore.emit.should.be.Function
       done()
     })
 
     it('should load config if no options supplied', function(done) {
-      let fileStore = new FileStoreAdapter()
+      const fileStore = new FileStoreAdapter()
       should.exist(fileStore.config)
       fileStore.config.database.path.should.eql('test/db')
       done()
     })
 
     it('should load config from options supplied', function(done) {
-      let fileStore = new FileStoreAdapter({
+      const fileStore = new FileStoreAdapter({
         database: { path: 'test/workspace2' },
       })
       should.exist(fileStore.config)
@@ -67,13 +67,13 @@ describe('FileStore', function() {
     })
 
     it('should have readyState == 0 when initialised', function(done) {
-      let fileStore = new FileStoreAdapter()
+      const fileStore = new FileStoreAdapter()
       fileStore.readyState.should.eql(0)
       done()
     })
 
     it('should expose a handshake function', function(done) {
-      let fileStore = new FileStoreAdapter()
+      const fileStore = new FileStoreAdapter()
 
       fileStore.handshake().version.should.eql(packageManifest.version)
       done()
@@ -82,7 +82,7 @@ describe('FileStore', function() {
 
   describe('connect', function() {
     it('should create and return database when connecting', function(done) {
-      let fileStore = new FileStoreAdapter()
+      const fileStore = new FileStoreAdapter()
       fileStore.connect({ database: 'content' }).then(() => {
         should.exist(fileStore.database)
         done()
@@ -90,7 +90,7 @@ describe('FileStore', function() {
     })
 
     it('should have readyState == 1 when connected', function(done) {
-      let fileStore = new FileStoreAdapter()
+      const fileStore = new FileStoreAdapter()
       fileStore
         .connect({ database: 'content', collection: 'posts' })
         .then(() => {
@@ -102,9 +102,9 @@ describe('FileStore', function() {
 
   describe('prepareQuery', function() {
     it('should modify regular expressions to use `$regex`', function(done) {
-      let fileStore = new FileStoreAdapter()
-      let query = { fieldOne: /value/i }
-      let prepared = fileStore.prepareQuery(query, {})
+      const fileStore = new FileStoreAdapter()
+      const query = { fieldOne: /value/i }
+      const prepared = fileStore.prepareQuery(query, {})
 
       prepared.should.eql({ fieldOne: { $regex: ['value', 'i'] } })
 
@@ -112,9 +112,9 @@ describe('FileStore', function() {
     })
 
     it('should replace `$ne: null` with `$ne: undefined`', function(done) {
-      let fileStore = new FileStoreAdapter()
-      let query = { fieldOne: { $ne: null } }
-      let prepared = fileStore.prepareQuery(query, {})
+      const fileStore = new FileStoreAdapter()
+      const query = { fieldOne: { $ne: null } }
+      const prepared = fileStore.prepareQuery(query, {})
 
       prepared.should.eql({ fieldOne: { $ne: undefined } })
 
@@ -122,9 +122,9 @@ describe('FileStore', function() {
     })
 
     it('should construct an "$and" query if query contains multiple expressions', function(done) {
-      let fileStore = new FileStoreAdapter()
-      let query = { fieldOne: 1, fieldTwo: { $gt: 1, $lt: 10 } }
-      let prepared = fileStore.prepareQuery(query, {})
+      const fileStore = new FileStoreAdapter()
+      const query = { fieldOne: 1, fieldTwo: { $gt: 1, $lt: 10 } }
+      const prepared = fileStore.prepareQuery(query, {})
 
       should.exist(prepared['$and'])
       prepared['$and'].length.should.eql(3)
@@ -134,9 +134,9 @@ describe('FileStore', function() {
     })
 
     it('should replace `null` with `$exists: false`', function(done) {
-      let fileStore = new FileStoreAdapter()
-      let query = { fieldOne: null }
-      let prepared = fileStore.prepareQuery(query, {})
+      const fileStore = new FileStoreAdapter()
+      const query = { fieldOne: null }
+      const prepared = fileStore.prepareQuery(query, {})
 
       prepared.should.eql({ fieldOne: { $exists: false } })
 
@@ -145,7 +145,7 @@ describe('FileStore', function() {
   })
 
   describe('applyFieldsFilterToResults', function() {
-    let documents = [
+    const documents = [
       {
         _id: 1,
         name: 'Ernie',
@@ -167,9 +167,9 @@ describe('FileStore', function() {
     ]
 
     it('should apply a field projection (of type "includes") to an array of documents, returning the modified array', function(done) {
-      let fileStore = new FileStoreAdapter()
-      let fields = { _id: 1, name: 1, age: 1 }
-      let modifiedDocuments = fileStore.applyFieldsFilterToResults(
+      const fileStore = new FileStoreAdapter()
+      const fields = { _id: 1, name: 1, age: 1 }
+      const modifiedDocuments = fileStore.applyFieldsFilterToResults(
         fields,
         documents
       )
@@ -196,9 +196,9 @@ describe('FileStore', function() {
     })
 
     it('should apply a field projection (of type "includes") to an array of documents, returning the modified array', function(done) {
-      let fileStore = new FileStoreAdapter()
-      let fields = { name: 0, age: 0 }
-      let modifiedDocuments = fileStore.applyFieldsFilterToResults(
+      const fileStore = new FileStoreAdapter()
+      const fields = { name: 0, age: 0 }
+      const modifiedDocuments = fileStore.applyFieldsFilterToResults(
         fields,
         documents
       )
@@ -222,9 +222,9 @@ describe('FileStore', function() {
     })
 
     it('should apply a field projection (of type "includes", in array format) to an array of documents, returning the modified array', function(done) {
-      let fileStore = new FileStoreAdapter()
-      let fields = ['name', 'age']
-      let modifiedDocuments = fileStore.applyFieldsFilterToResults(
+      const fileStore = new FileStoreAdapter()
+      const fields = ['name', 'age']
+      const modifiedDocuments = fileStore.applyFieldsFilterToResults(
         fields,
         documents
       )
@@ -253,28 +253,28 @@ describe('FileStore', function() {
 
   describe('getFieldOrParentSchema', function() {
     it('should return a field from the schema by key', function(done) {
-      let fileStore = new FileStoreAdapter()
-      let schema = {
+      const fileStore = new FileStoreAdapter()
+      const schema = {
         name: {
           type: 'String',
         },
       }
 
-      let field = fileStore.getFieldOrParentSchema('name', schema)
+      const field = fileStore.getFieldOrParentSchema('name', schema)
 
       field.type.should.eql('String')
       done()
     })
 
     it('should return a field from the schema by parent key', function(done) {
-      let fileStore = new FileStoreAdapter()
-      let schema = {
+      const fileStore = new FileStoreAdapter()
+      const schema = {
         name: {
           type: 'String',
         },
       }
 
-      let field = fileStore.getFieldOrParentSchema('name.first', schema)
+      const field = fileStore.getFieldOrParentSchema('name.first', schema)
 
       field.type.should.eql('String')
       done()
@@ -283,11 +283,11 @@ describe('FileStore', function() {
 
   describe('insert', function() {
     it('should insert a single document into the database', function(done) {
-      let fileStore = new FileStoreAdapter()
+      const fileStore = new FileStoreAdapter()
       fileStore
         .connect({ database: 'content', collection: 'users' })
         .then(() => {
-          let user = { name: 'David' }
+          const user = { name: 'David' }
 
           fileStore
             .insert({ data: user, collection: 'users', schema: {} })
@@ -300,11 +300,11 @@ describe('FileStore', function() {
     })
 
     it('should insert an array of documents into the database', function(done) {
-      let fileStore = new FileStoreAdapter()
+      const fileStore = new FileStoreAdapter()
       fileStore
         .connect({ database: 'content', collection: 'users' })
         .then(() => {
-          let users = [{ name: 'Ernest' }, { name: 'Wallace' }]
+          const users = [{ name: 'Ernest' }, { name: 'Wallace' }]
 
           fileStore
             .insert({ data: users, collection: 'users', schema: {} })
@@ -319,11 +319,11 @@ describe('FileStore', function() {
     })
 
     it("should add _id property if one isn't specified", function(done) {
-      let fileStore = new FileStoreAdapter()
+      const fileStore = new FileStoreAdapter()
       fileStore
         .connect({ database: 'content', collection: 'users' })
         .then(() => {
-          let users = [{ name: 'Ernest' }, { name: 'Wallace' }]
+          const users = [{ name: 'Ernest' }, { name: 'Wallace' }]
 
           fileStore
             .insert({ data: users, collection: 'users', schema: {} })
@@ -338,11 +338,14 @@ describe('FileStore', function() {
     })
 
     it('should use specified _id property if one is specified', function(done) {
-      let fileStore = new FileStoreAdapter()
+      const fileStore = new FileStoreAdapter()
       fileStore
         .connect({ database: 'content', collection: 'users' })
         .then(() => {
-          let users = [{ _id: uuid.v4(), name: 'Ernest' }, { name: 'Wallace' }]
+          const users = [
+            { _id: uuid.v4(), name: 'Ernest' },
+            { name: 'Wallace' },
+          ]
 
           fileStore
             .insert({ data: users, collection: 'users', schema: {} })
@@ -359,11 +362,11 @@ describe('FileStore', function() {
 
   describe('find', function() {
     it('should find a single document in the database', function(done) {
-      let fileStore = new FileStoreAdapter()
+      const fileStore = new FileStoreAdapter()
       fileStore
         .connect({ database: 'content', collection: 'users' })
         .then(() => {
-          let users = [{ name: 'Ernest' }, { name: 'Wallace' }]
+          const users = [{ name: 'Ernest' }, { name: 'Wallace' }]
 
           fileStore
             .insert({ data: users, collection: 'users', schema: {} })
@@ -384,14 +387,14 @@ describe('FileStore', function() {
     })
 
     it('should return the number of records requested when using `limit`', function(done) {
-      let fileStore = new FileStoreAdapter()
+      const fileStore = new FileStoreAdapter()
       fileStore
         .connect({ database: 'content', collection: 'users' })
         .then(() => {
           fileStore.getCollection('users').then(collection => {
             collection.clear()
 
-            let users = [
+            const users = [
               { name: 'BigBird' },
               { name: 'Ernie' },
               { name: 'Oscar' },
@@ -423,14 +426,14 @@ describe('FileStore', function() {
     })
 
     it('should sort records in ascending order by the `$loki` property when no query or sort are provided', function(done) {
-      let fileStore = new FileStoreAdapter()
+      const fileStore = new FileStoreAdapter()
       fileStore
         .connect({ database: 'content', collection: 'users' })
         .then(() => {
           fileStore.getCollection('users').then(collection => {
             collection.clear()
 
-            let users = [
+            const users = [
               { name: 'Ernie' },
               { name: 'Oscar' },
               { name: 'BigBird' },
@@ -462,14 +465,14 @@ describe('FileStore', function() {
     })
 
     it('should sort records in ascending order by the query property when no sort is provided', function(done) {
-      let fileStore = new FileStoreAdapter()
+      const fileStore = new FileStoreAdapter()
       fileStore
         .connect({ database: 'content', collection: 'users' })
         .then(() => {
           fileStore.getCollection('users').then(collection => {
             collection.clear()
 
-            let users = [
+            const users = [
               { name: 'BigBird 3' },
               { name: 'BigBird 1' },
               { name: 'BigBird 2' },
@@ -503,14 +506,14 @@ describe('FileStore', function() {
     })
 
     it('should sort records in ascending order by the specified property', function(done) {
-      let fileStore = new FileStoreAdapter()
+      const fileStore = new FileStoreAdapter()
       fileStore
         .connect({ database: 'content', collection: 'users' })
         .then(() => {
           fileStore.getCollection('users').then(collection => {
             collection.clear()
 
-            let users = [
+            const users = [
               { name: 'Ernie' },
               { name: 'Oscar' },
               { name: 'BigBird' },
@@ -545,14 +548,14 @@ describe('FileStore', function() {
     })
 
     it('should sort records in descending order by the specified property', function(done) {
-      let fileStore = new FileStoreAdapter()
+      const fileStore = new FileStoreAdapter()
       fileStore
         .connect({ database: 'content', collection: 'users' })
         .then(() => {
           fileStore.getCollection('users').then(collection => {
             collection.clear()
 
-            let users = [
+            const users = [
               { name: 'Ernie' },
               { name: 'Oscar' },
               { name: 'BigBird' },
@@ -587,14 +590,14 @@ describe('FileStore', function() {
     })
 
     it('should return only the fields specified by the `fields` property (projection of type "includes")', function(done) {
-      let fileStore = new FileStoreAdapter()
+      const fileStore = new FileStoreAdapter()
       fileStore
         .connect({ database: 'content', collection: 'users' })
         .then(() => {
           fileStore.getCollection('users').then(collection => {
             collection.clear()
 
-            let users = [
+            const users = [
               {
                 name: 'Ernie',
                 age: 7,
@@ -625,7 +628,7 @@ describe('FileStore', function() {
                     results.results.constructor.name.should.eql('Array')
                     results.results.length.should.eql(2)
 
-                    let bigBird = results.results[0]
+                    const bigBird = results.results[0]
                     should.exist(bigBird.name)
                     should.exist(bigBird.age)
                     should.exist(bigBird._id)
@@ -644,14 +647,14 @@ describe('FileStore', function() {
     })
 
     it('should return only the fields specified by the `fields` property (projection of type "excludes")', function(done) {
-      let fileStore = new FileStoreAdapter()
+      const fileStore = new FileStoreAdapter()
       fileStore
         .connect({ database: 'content', collection: 'users' })
         .then(() => {
           fileStore.getCollection('users').then(collection => {
             collection.clear()
 
-            let users = [
+            const users = [
               {
                 name: 'Ernie',
                 age: 7,
@@ -682,7 +685,7 @@ describe('FileStore', function() {
                     results.results.constructor.name.should.eql('Array')
                     results.results.length.should.eql(2)
 
-                    let bigBird = results.results[0]
+                    const bigBird = results.results[0]
                     should.exist(bigBird.name)
                     should.not.exist(bigBird.age)
                     should.exist(bigBird._id)
@@ -701,14 +704,16 @@ describe('FileStore', function() {
     })
 
     it('should return only the fields specified by the `fields` property when using nested properties (projection of type "includes")', function(done) {
-      let fileStore = new FileStoreAdapter()
+      const fileStore = new FileStoreAdapter()
       fileStore
         .connect({ database: 'content', collection: 'users' })
         .then(() => {
           fileStore.getCollection('users').then(collection => {
             collection.clear()
 
-            let users = [{ name: 'Ernie', data: { age: 7, colour: 'yellow' } }]
+            const users = [
+              { name: 'Ernie', data: { age: 7, colour: 'yellow' } },
+            ]
 
             fileStore
               .insert({ data: users, collection: 'users', schema: {} })
@@ -723,7 +728,7 @@ describe('FileStore', function() {
                     results.results.constructor.name.should.eql('Array')
                     results.results.length.should.eql(1)
 
-                    let bigBird = results.results[0]
+                    const bigBird = results.results[0]
                     should.exist(bigBird.data)
                     should.exist(bigBird.data.age)
                     should.exist(bigBird._id)
@@ -743,14 +748,16 @@ describe('FileStore', function() {
     })
 
     it('should return only the fields specified by the `fields` property when using nested properties (projection of type "excludes")', function(done) {
-      let fileStore = new FileStoreAdapter()
+      const fileStore = new FileStoreAdapter()
       fileStore
         .connect({ database: 'content', collection: 'users' })
         .then(() => {
           fileStore.getCollection('users').then(collection => {
             collection.clear()
 
-            let users = [{ name: 'Ernie', data: { age: 7, colour: 'yellow' } }]
+            const users = [
+              { name: 'Ernie', data: { age: 7, colour: 'yellow' } },
+            ]
 
             fileStore
               .insert({ data: users, collection: 'users', schema: {} })
@@ -765,7 +772,7 @@ describe('FileStore', function() {
                     results.results.constructor.name.should.eql('Array')
                     results.results.length.should.eql(1)
 
-                    let bigBird = results.results[0]
+                    const bigBird = results.results[0]
                     should.exist(bigBird.data)
                     should.not.exist(bigBird.data.age)
                     should.exist(bigBird._id)
@@ -794,7 +801,7 @@ describe('FileStore', function() {
   // '$gt'
   describe('query operators', function() {
     it('should handle all query operators', done => {
-      let fileStore = new FileStoreAdapter()
+      const fileStore = new FileStoreAdapter()
 
       fileStore
         .connect({ database: 'content', collection: 'users' })
@@ -802,7 +809,7 @@ describe('FileStore', function() {
           fileStore.getCollection('users').then(collection => {
             collection.clear()
 
-            let users = [
+            const users = [
               { name: 'Ernie', age: 7, colour: 'yellow' },
               { name: 'BigBird', age: 17, colour: 'yellow' },
               { name: 'Bert', age: 9, colour: 'orange' },
@@ -811,7 +818,7 @@ describe('FileStore', function() {
             fileStore
               .insert({ data: users, collection: 'users', schema: {} })
               .then(results => {
-                let queue = []
+                const queue = []
                 queue.push({ name: 'Ernie' })
                 queue.push({ colour: { $eq: 'yellow' } })
                 queue.push({ age: { $in: [7, 9] } })
@@ -933,14 +940,14 @@ describe('FileStore', function() {
   describe('update', function() {
     describe('$set', function() {
       it('should update documents matching the query', function(done) {
-        let fileStore = new FileStoreAdapter()
+        const fileStore = new FileStoreAdapter()
         fileStore
           .connect({ database: 'content', collection: 'users' })
           .then(() => {
             fileStore.getCollection('users').then(collection => {
               collection.clear()
 
-              let users = [
+              const users = [
                 { name: 'Ernie', age: 7, colour: 'yellow' },
                 { name: 'Oscar', age: 9, colour: 'green' },
                 { name: 'BigBird', age: 13, colour: 'yellow' },
@@ -985,14 +992,14 @@ describe('FileStore', function() {
 
     describe('$inc', function() {
       it('should update documents matching the query', function(done) {
-        let fileStore = new FileStoreAdapter()
+        const fileStore = new FileStoreAdapter()
         fileStore
           .connect({ database: 'content', collection: 'users' })
           .then(() => {
             fileStore.getCollection('users').then(collection => {
               collection.clear()
 
-              let users = [
+              const users = [
                 { name: 'Ernie', age: 7, colour: 'yellow' },
                 { name: 'Oscar', age: 9, colour: 'green' },
                 { name: 'BigBird', age: 13, colour: 'yellow' },
@@ -1038,14 +1045,14 @@ describe('FileStore', function() {
 
     describe('$push', function() {
       it('should update documents matching the query', function(done) {
-        let fileStore = new FileStoreAdapter()
+        const fileStore = new FileStoreAdapter()
         fileStore
           .connect({ database: 'content', collection: 'users' })
           .then(() => {
             fileStore.getCollection('users').then(collection => {
               collection.clear()
 
-              let users = [
+              const users = [
                 { name: 'Ernie', colours: ['yellow'] },
                 { name: 'Oscar', colours: ['green'] },
                 { name: 'BigBird', colours: ['yellow'] },
@@ -1094,14 +1101,14 @@ describe('FileStore', function() {
 
   describe('delete', function() {
     it('should delete documents matching the query', function(done) {
-      let fileStore = new FileStoreAdapter()
+      const fileStore = new FileStoreAdapter()
       fileStore
         .connect({ database: 'content', collection: 'users' })
         .then(() => {
           fileStore.getCollection('users').then(collection => {
             collection.clear()
 
-            let users = [
+            const users = [
               { name: 'Ernie', age: 7, colour: 'yellow' },
               { name: 'Oscar', age: 9, colour: 'green' },
               { name: 'BigBird', age: 13, colour: 'yellow' },
@@ -1138,14 +1145,14 @@ describe('FileStore', function() {
 
   describe('index', function() {
     it('should add indexes to the collection specified and return index names', function(done) {
-      let fileStore = new FileStoreAdapter()
+      const fileStore = new FileStoreAdapter()
       fileStore
         .connect({ database: 'content', collection: 'users' })
         .then(() => {
           fileStore.getCollection('users').then(collection => {
             collection.clear()
 
-            let indexes = [
+            const indexes = [
               {
                 keys: {
                   name: 1,
@@ -1173,11 +1180,11 @@ describe('FileStore', function() {
 
   describe('database', function() {
     it('should contain all collections that have been inserted into', function(done) {
-      let fileStore = new FileStoreAdapter()
+      const fileStore = new FileStoreAdapter()
       fileStore
         .connect({ database: 'content', collection: 'users' })
         .then(() => {
-          let user = { name: 'David' }
+          const user = { name: 'David' }
 
           fileStore
             .insert({ data: user, collection: 'users', schema: {} })
@@ -1188,7 +1195,7 @@ describe('FileStore', function() {
               fileStore
                 .connect({ database: 'content', collection: 'posts' })
                 .then(() => {
-                  let post = { title: 'David on Holiday' }
+                  const post = { title: 'David on Holiday' }
 
                   fileStore
                     .insert({ data: post, collection: 'posts', schema: {} })
@@ -1218,8 +1225,8 @@ describe('FileStore', function() {
     })
 
     it('should handle connection to multiple databases', function(done) {
-      let contentStore = new FileStoreAdapter()
-      let authStore = new FileStoreAdapter()
+      const contentStore = new FileStoreAdapter()
+      const authStore = new FileStoreAdapter()
 
       contentStore.connect({ database: 'content' }).then(() => {
         authStore.connect({ database: 'auth' }).then(() => {
@@ -1264,14 +1271,14 @@ describe('FileStore', function() {
     })
 
     it('should clear collections when calling dropDatabase', function(done) {
-      let fileStore = new FileStoreAdapter()
+      const fileStore = new FileStoreAdapter()
       fileStore
         .connect({ database: 'content', collection: 'users' })
         .then(() => {
           fileStore.getCollection('users').then(collection => {
             collection.clear()
 
-            let users = [
+            const users = [
               { name: 'Ernie' },
               { name: 'Oscar' },
               { name: 'BigBird' },

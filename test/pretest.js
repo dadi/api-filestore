@@ -1,17 +1,17 @@
-var fs = require('fs')
-var path = require('path')
-var colors = require('colors')
+const fs = require('fs')
+const path = require('path')
+const colors = require('colors')
 
-var testConfigPath = './config/filestore.test.json'
-var testConfigSamplePath = './config/filestore.test.json.sample'
+const testConfigPath = './config/filestore.test.json'
+const testConfigSamplePath = './config/filestore.test.json.sample'
 
-var testConfigSample = fs.readFileSync(testConfigSamplePath, {
+const testConfigSample = fs.readFileSync(testConfigSamplePath, {
   encoding: 'utf-8',
 })
 
 function loadConfig(done) {
   try {
-    var testConfig = fs.readFileSync(testConfigPath, { encoding: 'utf-8' })
+    const testConfig = fs.readFileSync(testConfigPath, { encoding: 'utf-8' })
     return done(JSON.parse(testConfig))
   } catch (err) {
     if (err.code === 'ENOENT') {
@@ -30,11 +30,11 @@ function stop() {
 }
 
 function testDatabaseSetting(config) {
-  var database = config.database.database
-  var authDatabase = config.auth.database.database
+  const database = config.database.database
+  const authDatabase = config.auth.database.database
 
   if (database !== 'test' || authDatabase !== 'test') {
-    var message =
+    const message =
       '\nWARNING: The test suite requires the use of a `test` database. The databases for authentication and data can be configured in the file ' +
       testConfigPath +
       '.'
