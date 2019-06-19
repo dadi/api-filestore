@@ -6,12 +6,13 @@ const testConfigPath = './config/filestore.test.json'
 const testConfigSamplePath = './config/filestore.test.json.sample'
 
 const testConfigSample = fs.readFileSync(testConfigSamplePath, {
-  encoding: 'utf-8',
+  encoding: 'utf-8'
 })
 
 function loadConfig(done) {
   try {
-    const testConfig = fs.readFileSync(testConfigPath, { encoding: 'utf-8' })
+    const testConfig = fs.readFileSync(testConfigPath, {encoding: 'utf-8'})
+
     return done(JSON.parse(testConfig))
   } catch (err) {
     if (err.code === 'ENOENT') {
@@ -38,6 +39,7 @@ function testDatabaseSetting(config) {
       '\nWARNING: The test suite requires the use of a `test` database. The databases for authentication and data can be configured in the file ' +
       testConfigPath +
       '.'
+
     console.log(message.bold.red)
     console.log('')
     console.log(
