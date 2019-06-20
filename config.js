@@ -8,7 +8,8 @@ const conf = convict({
     arg: 'node_env'
   },
   connectWithCollection: {
-    doc: 'Whether to use collection names as part of the connection string, generating a new database instance for each collection',
+    doc:
+      'Whether to use collection names as part of the connection string, generating a new database instance for each collection',
     format: Boolean,
     default: false
   },
