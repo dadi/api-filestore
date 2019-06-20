@@ -32,11 +32,12 @@
     "url": "https://github.com/dadi/api-filestore.git"
   },
   "devDependencies": {
+    "@dadi/eslint-config": "^1.0.0",
+    "@dadi/prettier-config": "^1.0.0",
     "colors": "^1.1.2",
     "coveralls": "^3.0.1",
     "env-test": "^1.0.0",
     "eslint": "^5.16.0",
-    "eslint-config-prettier": "^5.0.0",
     "husky": "^2.4.1",
     "js-promise-queue": "^1.1.0",
     "lint-staged": "^8.2.1",
@@ -44,9 +45,7 @@
     "nyc": "^14.1.0",
     "prettier": "^1.18.2",
     "should": "~4.0.4",
-    "sinon": "~1.17.6",
-    "snazzy": "^6.0.0",
-    "standard": "8.6.0"
+    "sinon": "~1.17.6"
   },
   "husky": {
     "hooks": {
