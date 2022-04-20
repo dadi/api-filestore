@@ -21,7 +21,7 @@
   "license": "ISC",
   "dependencies": {
     "@dadi/metadata": "^1.0.0",
-    "convict": "^4.3.2",
+    "convict": "^6.2.2",
     "debug": "^2.6.0",
     "lokijs": "1.5.6",
     "mkdirp": "^0.5.1",
