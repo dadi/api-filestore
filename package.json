@@ -40,7 +40,7 @@
     "eslint": "^5.16.0",
     "husky": "^2.4.1",
     "js-promise-queue": "^1.1.0",
-    "lint-staged": "^8.2.1",
+    "lint-staged": "^13.1.0",
     "mocha": "^5.2.0",
     "nyc": "^14.1.0",
     "prettier": "^1.18.2",
